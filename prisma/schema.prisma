@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Publication {
+  id           Int           @id @default(autoincrement())
+  title        String
+  subtitle     String        @db.VarChar(60)
+  description  String
+  isPublic     Boolean
+  user_id      Int
+  category_id  Int
+  sum          Int?          @default(0)
+  num          Int?          @default(0)
+  author       User          @relation(fields: [user_id], references: [id])
+  category     Category      @relation(fields: [category_id], references: [id])
+  participants Participant[]
+  Review       Review[]
+
+  @@map("publications")
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  name         String        @db.VarChar(60)
+  username     String        @db.VarChar(20)
+  password     String        @db.VarChar(60)
+  permission   String        @db.VarChar(20)
+  publication  Publication[]
+  participants Participant[]
+  review       Review[]
+
+  @@map("users")
+}
+
+model Category {
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(30)
+  publication Publication[]
+
+  @@map("categories")
+}
+
+model Participant {
+  id            Int         @id @default(autoincrement())
+  publication   Publication @relation(fields: [publicationId], references: [id])
+  publicationId Int
+  user          User        @relation(fields: [userId], references: [id])
+  userId        Int
+
+  @@map("participants")
+}
+
+model Review {
+  id             Int      @id @default(autoincrement())
+  comment        String   @db.VarChar(255)
+  stars          Int
+  date           DateTime
+  publication_id Int
+  user_id        Int?
+  client_id      Int?
+
+  publication Publication @relation(fields: [publication_id], references: [id])
+  user        User?       @relation(fields: [user_id], references: [id])
+  client      Client?     @relation(fields: [client_id], references: [id])
+
+  @@map("reviews")
+}
+
+model Client {
+  id       Int      @id @default(autoincrement())
+  name     String   @db.VarChar(60)
+  email    String   @db.VarChar(60)
+  password String   @db.VarChar(60)
+  blocked  Boolean? @default(false)
+
+  Review Review[]
+
+  @@map("clients")
+}

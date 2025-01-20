@@ -12,7 +12,7 @@ export class CreatePublicationController {
 
             res.status(201).json({ message: "Publicação criada com sucesso!", newPublication })
         } catch (error: any) {
-            res.status(400).json({ error: error.message })
+            res.status(400).json({ error })
         }
     }
 }

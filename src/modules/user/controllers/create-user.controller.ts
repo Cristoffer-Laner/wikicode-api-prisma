@@ -12,7 +12,7 @@ export class CreateUserController {
 
             res.status(201).json({ message: "Usuário criado com sucesso!", newUser })
         } catch (error: any) {
-            res.status(400).json({ error: error.message })
+            res.status(400).json({ error })
         }
     }
 }

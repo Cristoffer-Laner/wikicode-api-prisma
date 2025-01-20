@@ -1,6 +1,4 @@
-export interface CreateUserDTO {
-    name: string;
-    username: string;
-    password: string;
-    permission: string;
-}
+import { userSchema } from "validators/user/userSchema";
+import { z } from "zod";
+
+export type CreateUserDTO = z.infer<typeof userSchema>

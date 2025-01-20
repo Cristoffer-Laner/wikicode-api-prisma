@@ -1,3 +1,4 @@
+import { userSchema } from "validators/user/userSchema";
 import { CreateUserDTO } from "../dtos/create-user.dto";
 import { UserRepository } from "../repositories/user.repository";
 
@@ -9,11 +10,13 @@ export class UserService {
     }
 
     async createUser(data: CreateUserDTO) {
-        const { name, username, password, permission } = data;
+        const validateSchema = userSchema.safeParse(data)
 
-        if (!name || !username || !password || !permission) {
-            throw new Error("Faltando um dos atributos de usuário: nome, usuário, senha ou permissão.")
+        if (!validateSchema.success) {
+            throw validateSchema.error.errors
         }
+
+        const { name, username, password, permission } = data;
 
         return await this.userRepository.create({ name, username, password, permission })
     }

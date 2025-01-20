@@ -1,3 +1,4 @@
+import { categorySchema } from "validators/category/categorySchema";
 import { CreateCategoryDTO } from "../dtos/create-category.dto";
 import { CategoryRepository } from "../repositories/category.repository";
 
@@ -9,11 +10,13 @@ export class CategoryService {
     }
 
     async createCategory(data: CreateCategoryDTO) {
-        const { name } = data;
+        const validateSchema = categorySchema.safeParse(data)
 
-        if (!name) {
-            throw new Error("Faltando um dos atributos de categoria: nome.")
+        if (!validateSchema.success) {
+            throw validateSchema.error.errors
         }
+
+        const { name } = data;
 
         return await this.categoryRepository.create({ name })
     }

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { CategoryService } from "../services/category.service";
+import { CustomError } from "errors/CustomError";
 
 export class CreateCategoryController {
     async handle(req: Request, res: Response) {
@@ -12,7 +13,15 @@ export class CreateCategoryController {
 
             res.status(201).json({ message: "Categoria criada com sucesso!", newCategory })
         } catch (error: any) {
-            res.status(400).json({ error })
+            if (error instanceof CustomError) {
+                res.status(error.statusCode).json({
+                    message: error.message,
+                    errors: error.details
+                });
+                return
+            }
+
+            res.status(500).json({ error })
         }
     }
 }

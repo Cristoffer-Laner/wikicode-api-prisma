@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { PublicationService } from "../services/publication.service";
+import { CustomError } from "errors/CustomError";
 
 export class CreatePublicationController {
     async handle(req: Request, res: Response) {
@@ -12,7 +13,15 @@ export class CreatePublicationController {
 
             res.status(201).json({ message: "Publicação criada com sucesso!", newPublication })
         } catch (error: any) {
-            res.status(400).json({ error })
+            if (error instanceof CustomError) {
+                res.status(error.statusCode).json({
+                    message: error.message,
+                    errors: error.details
+                });
+                return
+            }
+
+            res.status(500).json({ error })
         }
     }
 }

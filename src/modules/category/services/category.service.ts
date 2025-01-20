@@ -1,6 +1,7 @@
 import { categorySchema } from "validators/category/categorySchema";
 import { CreateCategoryDTO } from "../dtos/create-category.dto";
 import { CategoryRepository } from "../repositories/category.repository";
+import { CustomError } from "errors/CustomError";
 
 export class CategoryService {
     private categoryRepository: CategoryRepository
@@ -13,7 +14,12 @@ export class CategoryService {
         const validateSchema = categorySchema.safeParse(data)
 
         if (!validateSchema.success) {
-            throw validateSchema.error.errors
+            const errors = validateSchema.error.errors.map((err) => ({
+                message: err.message,
+                path: err.path
+            }))
+
+            throw new CustomError("Erro na validação", 400, errors)
         }
 
         const { name } = data;
